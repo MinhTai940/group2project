@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./UserList.css";
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -85,38 +86,48 @@ function UserList() {
   };
 
   return (
-    <div>
-      <h2>Danh sách người dùng</h2>
+    <div className="user-management">
+      <h2 className="page-title">Danh sách người dùng</h2>
       
       {/* Form sửa người dùng */}
       {editingUser && (
-        <div>
+        <div className="edit-form">
           <h3>Sửa người dùng</h3>
           <form onSubmit={handleUpdate}>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Tên"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Email"
-              required
-            />
-            <button type="submit">Lưu</button>
-            <button type="button" onClick={() => setEditingUser(null)}>Hủy</button>
+            <div className="form-group">
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Tên"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-save">Lưu</button>
+            <button 
+              type="button" 
+              className="btn btn-cancel"
+              onClick={() => setEditingUser(null)}
+            >
+              Hủy
+            </button>
           </form>
         </div>
       )}
 
       {/* Bảng danh sách người dùng */}
-      <table border="1" cellPadding="8">
+      <table className="users-table">
         <thead>
           <tr>
             <th>Tên</th>
@@ -130,8 +141,18 @@ function UserList() {
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>
-                <button onClick={() => handleEdit(user)}>Sửa</button>
-                <button onClick={() => handleDelete(user.id)}>Xóa</button>
+                <button 
+                  className="btn btn-edit"
+                  onClick={() => handleEdit(user)}
+                >
+                  Sửa
+                </button>
+                <button 
+                  className="btn btn-delete"
+                  onClick={() => handleDelete(user.id)}
+                >
+                  Xóa
+                </button>
               </td>
             </tr>
           ))}

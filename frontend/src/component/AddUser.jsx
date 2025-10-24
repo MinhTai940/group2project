@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./AddUser.css";
 
 function AddUser({ onUserAdded }) {
   const [name, setName] = useState("");
@@ -36,7 +37,7 @@ function AddUser({ onUserAdded }) {
   };
 
   return (
-    <div>
+    <div className="add-user-form">
       <h2>Thêm người dùng</h2>
       <form onSubmit={handleSubmit}>
         <input
@@ -44,12 +45,14 @@ function AddUser({ onUserAdded }) {
           placeholder="Tên"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <button type="submit">Thêm</button>
       </form>
