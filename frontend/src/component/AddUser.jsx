@@ -7,20 +7,31 @@ function AddUser({ onUserAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate name
+    if (!name.trim()) {
+      alert("Name không được để trống");
+      return;
+    }
 
-    if (!name || !email) {
-      alert("Vui lòng nhập đủ thông tin!");
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      alert("Email không hợp lệ");
       return;
     }
 
     try {
-      await axios.post("http://localhost:3000/users", { name, email });
+      await axios.post("http://localhost:3000/users", { 
+        name: name.trim(), 
+        email: email.trim() 
+      });
       alert("Thêm user thành công!");
       setName("");
       setEmail("");
       onUserAdded(); // Gọi lại hàm load danh sách từ component cha
     } catch (error) {
-      console.error("Lỗi khi gọi API POST:", error);
+      console.error("Lỗi khi thêm user:", error);
+      alert("Có lỗi xảy ra khi thêm user. Vui lòng thử lại!");
     }
   };
 
