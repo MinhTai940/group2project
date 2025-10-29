@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 import "./UserList.css";
 
 function UserList() {
+  const { token } = useAuth();
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -13,16 +15,25 @@ function UserList() {
   // Lấy danh sách user khi component load
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/users");
+      const res = await axios.get("http://localhost:3000/api/users", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       setUsers(res.data);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu:", error);
-      alert("Không thể tải danh sách người dùng");
+      if (error.response?.status === 401) {
+        alert("Bạn cần đăng nhập để xem danh sách người dùng");
+      } else if (error.response?.status === 403) {
+        alert("Bạn không có quyền xem danh sách người dùng");
+      } else {
+        console.error("Lỗi khi tải dữ liệu:", error);
+        alert("Không thể tải danh sách người dùng");
+      }
     }
   };
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Hàm xóa user
@@ -32,14 +43,22 @@ function UserList() {
     }
 
     try {
-      const response = await axios.delete(`http://localhost:3000/users/${id}`);
+      const response = await axios.delete(`http://localhost:3000/api/users/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       if (response.data) {
         setUsers(users.filter(user => user.id !== id));
         alert('Xóa người dùng thành công!');
       }
     } catch (error) {
-      console.error('Lỗi khi xóa người dùng:', error);
-      alert('Có lỗi xảy ra khi xóa người dùng. Vui lòng thử lại!');
+      if (error.response?.status === 401) {
+        alert("Bạn cần đăng nhập để xóa người dùng");
+      } else if (error.response?.status === 403) {
+        alert("Bạn không có quyền xóa người dùng này");
+      } else {
+        console.error('Lỗi khi xóa người dùng:', error);
+        alert('Có lỗi xảy ra khi xóa người dùng. Vui lòng thử lại!');
+      }
     }
   };
 
@@ -67,7 +86,7 @@ function UserList() {
     
     try {
       const response = await axios.put(
-        `http://localhost:3000/users/${editingUser.id}`,
+        `http://localhost:3000/api/users/${editingUser.id}`,
         formData
       );
       

@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 // Khởi tạo ứng dụng Express
 const app = express();
@@ -13,6 +14,9 @@ dotenv.config({ path: './server.env' });
 // Middleware
 app.use(cors()); // Cho phép CORS cho frontend
 app.use(express.json()); // Đọc JSON từ body request
+
+// Serve static files for uploaded avatars
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route test kết nối
 app.get('/', (req, res) => {
@@ -27,11 +31,13 @@ app.get('/', (req, res) => {
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
+const uploadRouter = require('./routes/upload');
 
 // Use routes
 app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/profile', profileRouter);
+app.use('/api/upload', uploadRouter);
 
 // Kết nối MongoDB Atlas
 const connectDB = async () => {

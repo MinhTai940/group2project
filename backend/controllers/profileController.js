@@ -13,14 +13,15 @@ const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, payload) => {
     if (err) {
       return res.status(403).json({
         success: false,
         message: 'Invalid or expired token'
       });
     }
-    req.user = user;
+    // Normalize to have id
+    req.user = { id: payload.userId || payload.id };
     next();
   });
 };
@@ -146,3 +147,7 @@ module.exports = {
   updateProfile,
   authenticateToken
 };
+
+
+
+

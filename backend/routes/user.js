@@ -2,10 +2,17 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const { protect, authorize, allowSelfOrAdmin } = require('../middleware/auth');
 
-router.get('/',  userController.getUsers);
+// Admin-only: list users
+router.get('/', protect, authorize('admin'), userController.getUsers);
+
+// Optional: creation stays open for the existing feature (can be restricted if needed)
 router.post('/', userController.createUser);
+
 router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+
+// Admin or self can delete
+router.delete('/:id', protect, allowSelfOrAdmin, userController.deleteUser);
 
 module.exports = router;
