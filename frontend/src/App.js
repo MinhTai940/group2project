@@ -1,18 +1,22 @@
-import React, { useState } from "react";
-import UserList from "./component/UserList";
-import AddUser from "./component/AddUser";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import AuthApp from "./component/AuthApp";
+import ForgotPassword from "./component/ForgotPassword";
+import ResetPassword from "./component/ResetPassword";
 
 function App() {
-  const [refresh, setRefresh] = useState(false);
-
-  const reloadUsers = () => setRefresh(!refresh);
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Quản lý người dùng</h1>
-      <AddUser onUserAdded={reloadUsers} />
-      <UserList key={refresh} />
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<AuthApp />} />
+          <Route path="/login" element={<AuthApp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
