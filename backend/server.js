@@ -23,9 +23,15 @@ app.get('/', (req, res) => {
   });
 });
 
-// Import route user
+// Import routes
 const userRouter = require('./routes/user');
-app.use('/users', userRouter);
+const authRouter = require('./routes/auth');
+const profileRouter = require('./routes/profile');
+
+// Use routes
+app.use('/api/users', userRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/profile', profileRouter);
 
 // Kết nối MongoDB Atlas
 const connectDB = async () => {

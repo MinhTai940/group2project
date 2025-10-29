@@ -1,10 +1,10 @@
 // controllers/userController.js
-const User = require('../models/User');
+const UserManagement = require('../models/UserManagement');
 
 // GET /users
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find().lean(); // trả object thuần, nhẹ hơn
+    const users = await UserManagement.find().lean(); // trả object thuần, nhẹ hơn
     // Chuyển đổi _id thành id để phù hợp với frontend
     const usersWithId = users.map(user => ({
       id: user._id,
@@ -35,13 +35,16 @@ exports.createUser = async (req, res) => {
     }
 
     // kiểm tra trùng email
-    const existed = await User.findOne({ email });
+    const existed = await UserManagement.findOne({ email });
     if (existed) {
       return res.status(409).json({ message: 'Email đã tồn tại' });
     }
 
     // tạo user trong MongoDB
-    const user = await User.create({ name, email });
+    const user = await UserManagement.create({ 
+      name, 
+      email
+    });
     return res.status(201).json({
       id: user._id,
       name: user.name,
@@ -71,19 +74,19 @@ exports.updateUser = async (req, res) => {
     }
 
     // kiểm tra user có tồn tại không
-    const user = await User.findById(id);
+    const user = await UserManagement.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // kiểm tra trùng email (trừ user hiện tại)
-    const existed = await User.findOne({ email, _id: { $ne: id } });
+    const existed = await UserManagement.findOne({ email, _id: { $ne: id } });
     if (existed) {
       return res.status(409).json({ message: 'Email đã tồn tại' });
     }
 
     // cập nhật user
-    const updatedUser = await User.findByIdAndUpdate(id, { name, email }, { new: true });
+    const updatedUser = await UserManagement.findByIdAndUpdate(id, { name, email }, { new: true });
     return res.json({
       id: updatedUser._id,
       name: updatedUser.name,
@@ -99,12 +102,12 @@ exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await User.findById(id);
+    const user = await UserManagement.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    await User.findByIdAndDelete(id);
+    await UserManagement.findByIdAndDelete(id);
     return res.json({ message: "User deleted" });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi xóa người dùng', error: err.message });
