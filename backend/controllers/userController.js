@@ -1,19 +1,44 @@
 // controllers/userController.js
+const mongoose = require('mongoose');
 const UserManagement = require('../models/UserManagement');
 
 // GET /users
 exports.getUsers = async (req, res) => {
   try {
-    const users = await UserManagement.find().lean(); // trả object thuần, nhẹ hơn
-    // Chuyển đổi _id thành id để phù hợp với frontend
+    console.log('GET /users - Fetching users list');
+    console.log('User requesting:', req.user); // From auth middleware
+    
+    // Kiểm tra kết nối database
+    if (mongoose.connection.readyState !== 1) {
+      console.error('Database not connected. Current state:', mongoose.connection.readyState);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Database connection error',
+        detail: 'Could not connect to database'
+      });
+    }
+
+    const users = await UserManagement.find().lean();
+    console.log(`Found ${users.length} users`);
+    
     const usersWithId = users.map(user => ({
       id: user._id,
       name: user.name,
       email: user.email
     }));
-    res.json(usersWithId);
+
+    return res.json({
+      success: true,
+      data: usersWithId
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi lấy danh sách người dùng', error: err.message });
+    console.error('Error fetching users:', err);
+    return res.status(500).json({ 
+      success: false,
+      message: 'Lỗi lấy danh sách người dùng', 
+      error: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
 

@@ -15,18 +15,38 @@ function UserList() {
   // Lấy danh sách user khi component load
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/users", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      console.log('Fetching users with token:', token);
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+      
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
+        headers: token ? { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } : {}
       });
+      
+      console.log('Response:', res.data);
       setUsers(res.data);
     } catch (error) {
-      if (error.response?.status === 401) {
-        alert("Bạn cần đăng nhập để xem danh sách người dùng");
-      } else if (error.response?.status === 403) {
-        alert("Bạn không có quyền xem danh sách người dùng");
+      console.error('Full error:', error);
+      
+      if (error.response) {
+        console.error('Response error:', error.response.data);
+        console.error('Status code:', error.response.status);
+        
+        if (error.response.status === 401) {
+          alert("Bạn cần đăng nhập để xem danh sách người dùng");
+        } else if (error.response.status === 403) {
+          alert("Bạn không có quyền xem danh sách người dùng");
+        } else {
+          alert(`Lỗi ${error.response.status}: ${error.response.data.message || 'Không thể tải danh sách người dùng'}`);
+        }
+      } else if (error.request) {
+        console.error('Request error:', error.request);
+        alert("Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.");
       } else {
-        console.error("Lỗi khi tải dữ liệu:", error);
-        alert("Không thể tải danh sách người dùng");
+        console.error("Error message:", error.message);
+        alert("Có lỗi xảy ra: " + error.message);
       }
     }
   };
@@ -43,7 +63,7 @@ function UserList() {
     }
 
     try {
-      const response = await axios.delete(`http://localhost:3000/api/users/${id}`, {
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       if (response.data) {
@@ -86,7 +106,7 @@ function UserList() {
     
     try {
       const response = await axios.put(
-        `http://localhost:3000/api/users/${editingUser.id}`,
+        `${import.meta.env.VITE_API_URL}/api/users/${editingUser.id}`,
         formData
       );
       
