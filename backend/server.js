@@ -12,7 +12,11 @@ const app = express();
 dotenv.config({ path: './server.env' });
 
 // Middleware
-app.use(cors()); // Cho phép CORS cho frontend
+// Cấu hình CORS
+app.use(cors({
+  origin: ['http://localhost:3001', 'https://group2project-pi2c.vercel.app'],
+  credentials: true
+}));
 app.use(express.json()); // Đọc JSON từ body request
 
 // Serve static files for uploaded avatars

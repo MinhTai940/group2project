@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (name, email, password, role = 'user') => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/signup`, {
+      const response = await axios.post(`${import.meta.env.REACT_APP_API_URL}/api/auth/signup`, {
         name,
         email,
         password,
